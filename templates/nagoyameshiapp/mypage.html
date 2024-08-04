@@ -1,0 +1,97 @@
+{% extends "nagoyameshiapp/base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block main %}
+<article>
+    <a href="#" onclick="history.back()" style="font-size: 18px; padding-top: 10px;">＜戻る</a>
+    <h1 class="subtitle">{{ request.user.username }}さんのマイページ</h1>
+
+    <h2 class="subtitle">有料会員登録</h2>
+
+    <div>
+        {% if is_premium %}
+        <a href="{% url 'nagoyameshiapp:portal' %}">有料会員設定へ</a>
+        {% else %}
+        <form action="{% url 'nagoyameshiapp:checkout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="有料会員登録をする">
+        </form>
+        {% endif %}
+    </div>
+
+
+
+
+
+
+    <h2 class="subtitle">予約</h2>
+    <div>
+        <table class="table">
+            <tr>
+                <th>店舗名</th>
+                <th>日時</th>
+                <th>人数</th>
+                <th>キャンセル</th>
+            </tr>
+            {% for reservation in reservations %}
+            <tr>
+                <td>{{ reservation.restaurant }}</td>
+                <td>{{ reservation.datetime }}</td>
+                <td>{{ reservation.headcount }}</td>
+                <td>
+                    {% if deadline < reservation.datetime %}
+                    <form action="{%url 'nagoyameshiapp:reservation_delete' reservation.id %}" method="post">
+                        {% csrf_token %}
+                        <input class="btn  btn-danger" type="submit" value="予約キャンセル">
+                    {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h2 class="subtitle">お気に入り</h2>
+    <div>
+        <table class="table">
+            <tr>
+                <th>店舗名</th>
+                <th>登録日時</th>
+                <th></th>
+            </tr>
+            {% for favorite in favorites %}
+            <tr>
+                <td>{{ favorite.restaurant }}</td>
+                <td>{{ favorite.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+
+    <h2 class="subtitle">レビュー</h2>
+    <div>
+        <table class="table">
+            <tr>
+                <th>店舗名</th>
+                <th>投稿日時</th>
+                <th>更新日時</th>
+                <th>内容</th>
+            </tr>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review.restaurant }}</td>
+                <td>{{ review.created_at }}</td>
+                <td>{{ review.updated_at }}</td>
+                <td>{{ review.content }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    {% endblock %}
+</article>

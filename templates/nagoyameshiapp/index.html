@@ -1,0 +1,91 @@
+{% extends "nagoyameshiapp/base.html" %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block main %}
+
+<div class="slide-wrapper">
+    <div id="slide" class="slide">
+        <div>
+            <img src="media/images/ひつまぶし.jpg">
+        </div>
+        <div>
+            <img src="media/images/味噌カツ.jpg">
+        </div>
+        <div>
+            <img src="media/images/味噌煮込みうどん.jpg">
+        </div>
+    </div>
+
+    <span id="prev" class="prev"></span>
+    <span id="next" class="next"></span>
+
+    <ul class="indicator" id="indicator">
+        <li class="list"></li>
+        <li class="list"></li>
+        <li class="list"></li>
+    </ul>
+</div>
+
+
+<h2 class="subtitle" id="search-restaurant"></h2>
+    <form action="" method="GET">
+        <div class="input-group">
+
+            <select name="category">
+
+                <option value="">未選択</option>
+
+                {% for category in categories %}
+
+                <option value="{{category.id}}" {% if request.GET.category == category.str_id %} selected {% endif %} > {{category.name}} </option>
+
+                {% endfor %}
+            </select>
+                <input class="form-control btn-lg" type="text" name="search" placeholder="店舗名を入力" value="{{ request.GET.search }}">
+                <input class="btn btn-outline-primary btn-lg" type="submit" value="検索">
+        </div>
+
+        <div class="sort">      
+            <input type="radio" class="btn-check " name="options" id="option1" autocomplete="off" value="cost">
+            <label class="btn btn-outline-primary btn-lg" for="option1">価格の低い順</label>
+            
+            <input type="radio" class="btn-check " name="options" id="option2" autocomplete="off" value="-cost">
+            <label class="btn btn-outline-danger btn-lg" for="option2">価格の高い順</label>
+        </div>
+
+    </form>
+
+<h2 class="subtitle" id="list-restaurant">店舗一覧</h2>
+    
+    <div class="restaurant_det gap-3">
+        {% for restaurant in restaurants %}
+        <div class="border">
+            <h3>{{ restaurant.name }}</h3>
+            <img src="{{ restaurant.image.url }}" style="width: 425px ; height: 405px;">
+            <div>カテゴリ：{{ restaurant.category }}</div>
+            <div>価格：{{ restaurant.cost }}～</div>
+            <a href = "{% url 'nagoyameshiapp:restaurant' restaurant.id %}" class="btn btn-success">詳細</a>
+        </div>
+        {% endfor %}
+    </div>
+    
+
+
+<h2 class="subtitle" id="new-restaurant">新着店舗</h2>
+
+    <div class="restaurant_newdet gap-3">
+        {% for newrestaurant in newrestaurants %}
+        <div class="border">
+            <h3>{{ newrestaurant.name }}</h3>
+            <img src="{{ newrestaurant.image.url }}" style="width: 425px ; height: 425px;">
+            <div>カテゴリ：{{ newrestaurant.category }}</div>
+            <div>価格：{{ newrestaurant.cost }}～</div>
+            <a href = "{% url 'nagoyameshiapp:restaurant' newrestaurant.id %}" class="btn btn-success">詳細</a>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

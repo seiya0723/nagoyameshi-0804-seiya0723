@@ -1,0 +1,152 @@
+{% extends "nagoyameshiapp/base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block main %}
+
+<article>
+
+    <div class="restaurant_name">
+        {# 店舗名称 #}
+        <h1 >{{ restaurant.name }}</h1>
+
+        {# お気に入り登録/解除 #}
+        <form action="{% url 'nagoyameshiapp:favorite' restaurant.id %}" method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 col-6 mx-auto">
+                {% if is_favorite %}
+                <input class="btn btn-danger" type="submit" value="お気に入り解除">
+                {% else %}
+                <input class="btn btn-success" type="submit" value="お気に入り登録">
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <a href="{% url 'nagoyameshiapp:index' %}" style="font-size: 20px;">ホーム</a>
+    ＞店舗詳細
+
+    <div class="restaurant_table gap-5">
+        {# 店舗の画像 #}
+        <img class="img-thumbnail" src="{{ restaurant.image.url }}" style="width: 30% ; height: 30%;">
+
+        {# 店舗の詳細 #}
+        <table class="table">
+            <tr>
+                <td>
+                    <span>詳細 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.description }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>カテゴリ :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.category }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>予算 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.cost }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>営業時間 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.start_at }} ~ {{ restaurant.end_at }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>電話番号 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.tel }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>郵便番号 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.post_code }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span>住所 :</span>
+                </td>
+                <td>
+                    <span>{{ restaurant.address }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 class="subtitle">~ 予約フォーム ~</h2>
+
+    <form action="{% url 'nagoyameshiapp:reservation' restaurant.id %}" method="post">
+        {% csrf_token %}
+
+        <div class="reservation_input gap-3">
+            <input class="form-control" type="number" min="1" name="headcount" placeholder="予約人数" style="width: 50%;">
+            <input class="form-control" type="datetime-local" name="datetime" placeholder="予約日時"  style="width: 50%;">
+        </div>
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <input class="btn btn-outline-primary" type="submit" value="予約する"style="margin-top: 20px;">
+        </div>
+
+    </form>
+
+
+    <h2 class="subtitle">~ レビュー投稿 ~</h2>
+    <form action="{% url 'nagoyameshiapp:review' restaurant.id %}" method="post">
+        {% csrf_token %}
+
+        {% comment %}
+        <input type="hidden" name="restaurant" value="{{ restaurant.id }}">
+        <input type="hidden" name="user" value="{{ request.user.id }}">
+        {% endcomment %}
+
+        <div class="form-floating">
+            <textarea class="form-control" name="content" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 150px; width: 100%;"></textarea>
+            <label for="floatingTextarea2">レビュー内容</label>
+            
+            <div class="d-grid gap-2 col-6 mx-auto">
+               <button class="btn btn-outline-primary" type="submit" style="margin-top: 20px;">送信</button>
+            </div>
+
+        </div>
+    </form>
+
+    <h2 class="subtitle">~ レビュー一覧 ~</h2>
+    {% for review in reviews %}
+    <div>
+        <div id="reviewuser">{{ review.user }}</div>
+        <div id="reviewcontent">{{ review.content }}</div>
+
+        {# ログインユーザーのみのレビューを表示する #}
+        {% if request.user == review.user %}
+        <div class="d-flex justify-content-end gap-3">
+            <a href="{% url 'nagoyameshiapp:review_edit' review.id %}" class="btn btn-success" >編集</a>
+            <form action="{% url 'nagoyameshiapp:review_delete' review.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="削除" class="btn btn-danger ">
+            </form>
+        </div>
+        {% endif %}
+        <hr>
+    </div>
+    {% endfor %}
+</article>
+{% endblock %}
